@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 async function newFormHandler(event) {
   event.preventDefault();
 
@@ -8,7 +6,7 @@ async function newFormHandler(event) {
     .querySelector('textarea[name="post-content"]')
     .value.trim();
 
-  const respone = await fetch("/api/posts", {
+  const response = await fetch(`/api/posts`, {
     method: "POST",
     body: JSON.stringify({
       title,

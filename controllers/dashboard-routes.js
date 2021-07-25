@@ -1,21 +1,18 @@
 const router = require("express").Router();
 const sequelize = require("../config/connection");
-
 const { Post, User, Comment } = require("../models");
-
 const withAuth = require("../utils/auth");
-const { post, route } = require("./api");
 
 router.get("/", withAuth, (req, res) => {
   Post.findAll({
     where: {
       user_id: req.session.user_id,
     },
-    attributes: ["id", "title", "post_text", "created_at"],
+    attributes: ["id", "title", "content", "created_at"],
     include: [
       {
         model: Comment,
-        attributes: ["id", "comment_text", "post_id", "user_id", "create_at"],
+        attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
         include: {
           model: User,
           attributes: ["username"],
@@ -44,13 +41,12 @@ router.get("/", withAuth, (req, res) => {
     });
 });
 
-//edit
 router.get("/edit/:id", withAuth, (req, res) => {
   Post.findOne({
     where: {
       id: req.params.id,
     },
-    attributes: ["id", "title", "post_text", "create_at"],
+    attributes: ["id", "title", "content", "created_at"],
     include: [
       {
         model: Comment,
@@ -68,9 +64,12 @@ router.get("/edit/:id", withAuth, (req, res) => {
   })
     .then((dbPostData) => {
       if (!dbPostData) {
-        res.status(404).json({ message: "no post found with this id" });
+        res.status(404).json({
+          message: "No post found with this id",
+        });
         return;
       }
+
       const post = dbPostData.get({
         plain: true,
       });
